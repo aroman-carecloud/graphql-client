@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using GraphQL.Client.Exceptions;
 using GraphQL.Client.Experimental;
-using GraphQL.Client.Internal.HttpHandlers;
 using GraphQL.Common.Request;
 using GraphQL.Common.Response;
 using Newtonsoft.Json;
@@ -38,7 +37,7 @@ namespace GraphQL.Client {
 		/// <summary>
 		/// The Options	to be used
 		/// </summary>
-		public GraphQLClientOptions Options { get; set;}
+		public GraphQLClientOptions Options { get; set; }
 
 		#endregion
 
@@ -160,7 +159,7 @@ namespace GraphQL.Client {
 			var graphQLString = JsonConvert.SerializeObject(graphQLRequest, this.Options.JsonSerializerSettings);
 
 			using (var httpContent = new StringContent(graphQLString, Encoding.UTF8, this.Options.MediaType.MediaType))
-			using (var request=new HttpRequestMessage(HttpMethod.Post, this.EndPoint) { Content=httpContent})
+			using (var request = new HttpRequestMessage(HttpMethod.Post, this.EndPoint) { Content = httpContent })
 			using (var response = await this.httpClient.PostAsync(this.EndPoint, httpContent, cancellationToken).ConfigureAwait(false)) {
 				return await this.ReadHttpResponseMessageAsync(response).ConfigureAwait(false);
 			}
