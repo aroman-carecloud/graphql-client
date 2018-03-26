@@ -130,8 +130,10 @@ namespace GraphQL.Client {
 			var queryParamsBuilder = new StringBuilder($"query={graphQLRequest.Query}", 3);
 			if (graphQLRequest.OperationName != null) { queryParamsBuilder.Append($"&operationName={graphQLRequest.OperationName}"); }
 			if (graphQLRequest.Variables != null) { queryParamsBuilder.Append($"&variables={JsonConvert.SerializeObject(graphQLRequest.Variables)}"); }
-			using (var httpResponseMessage = await this.httpClient.GetAsync($"{this.Options.EndPoint}?{queryParamsBuilder.ToString()}", cancellationToken).ConfigureAwait(false)) {
-				return await this.ReadHttpResponseMessageAsync(httpResponseMessage).ConfigureAwait(false);
+
+			using (var request = new HttpRequestMessage(HttpMethod.Get, $"{this.Options.EndPoint}?{queryParamsBuilder}"))
+			using (var response = await this.httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false)) {
+				return await this.ReadHttpResponseMessageAsync(response).ConfigureAwait(false);
 			}
 		}
 
@@ -162,9 +164,11 @@ namespace GraphQL.Client {
 			if (graphQLRequest.Query == null) { throw new ArgumentNullException(nameof(graphQLRequest.Query)); }
 
 			var graphQLString = JsonConvert.SerializeObject(graphQLRequest, this.Options.JsonSerializerSettings);
+
 			using (var httpContent = new StringContent(graphQLString, Encoding.UTF8, this.Options.MediaType.MediaType))
-			using (var httpResponseMessage = await this.httpClient.PostAsync(this.EndPoint, httpContent, cancellationToken).ConfigureAwait(false)) {
-				return await this.ReadHttpResponseMessageAsync(httpResponseMessage).ConfigureAwait(false);
+			using (var request=new HttpRequestMessage(HttpMethod.Post, this.EndPoint) { Content=httpContent})
+			using (var response = await this.httpClient.PostAsync(this.EndPoint, httpContent, cancellationToken).ConfigureAwait(false)) {
+				return await this.ReadHttpResponseMessageAsync(response).ConfigureAwait(false);
 			}
 		}
 
