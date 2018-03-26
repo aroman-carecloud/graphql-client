@@ -1,14 +1,18 @@
 using System.Net.Http;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace GraphQL.Client.Internal.HttpHandlers {
 
-	internal class GraphQLHttpHandler : DelegatingHandler {
+	internal class GraphQLHttpHandler : MessageProcessingHandler {
 
 		public GraphQLHttpHandler(HttpMessageHandler innerHandler) : base(innerHandler) {}
 
-		protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) => base.SendAsync(request, cancellationToken);
+		protected override HttpRequestMessage ProcessRequest(HttpRequestMessage request, CancellationToken cancellationToken) {
+			return request;
+		}
+		protected override HttpResponseMessage ProcessResponse(HttpResponseMessage response, CancellationToken cancellationToken) {
+			return response;
+		}
 
 	}
 
