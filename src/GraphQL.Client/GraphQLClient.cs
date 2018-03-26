@@ -45,7 +45,7 @@ namespace GraphQL.Client {
 
 		#endregion
 
-		private HttpClient httpClient=>graphQLHttpHandler.HttpClient;
+		private readonly HttpClient httpClient;
 		private readonly GraphQLHttpHandler graphQLHttpHandler;
 
 		#region Constructors
@@ -83,6 +83,7 @@ namespace GraphQL.Client {
 			if (options.MediaType == null) { throw new ArgumentNullException(nameof(options.MediaType)); }
 
 			this.graphQLHttpHandler = new GraphQLHttpHandler(options);
+			this.httpClient = new HttpClient(this.graphQLHttpHandler);
 		}
 
 		/// <summary>
@@ -90,13 +91,14 @@ namespace GraphQL.Client {
 		/// </summary>
 		/// <param name="options">The Options to be used</param>
 		public GraphQLClient(GraphQLClientOptions options) {
-			if(options==null) { throw new ArgumentException(nameof(options)); }
+			if (options == null) { throw new ArgumentException(nameof(options)); }
 			if (options.EndPoint == null) { throw new ArgumentNullException(nameof(options.EndPoint)); }
 			if (options.JsonSerializerSettings == null) { throw new ArgumentNullException(nameof(options.JsonSerializerSettings)); }
 			if (options.HttpMessageHandler == null) { throw new ArgumentNullException(nameof(options.HttpMessageHandler)); }
 			if (options.MediaType == null) { throw new ArgumentNullException(nameof(options.MediaType)); }
 
 			this.graphQLHttpHandler = new GraphQLHttpHandler(options);
+			this.httpClient = new HttpClient(this.graphQLHttpHandler);
 		}
 
 		#endregion
@@ -109,7 +111,7 @@ namespace GraphQL.Client {
 		/// <param name="query">The Request</param>
 		/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 		/// <returns>The Response</returns>
-		public async Task<GraphQLResponse> GetQueryAsync(string query, CancellationToken cancellationToken=default) {
+		public async Task<GraphQLResponse> GetQueryAsync(string query, CancellationToken cancellationToken = default) {
 			if (query == null) { throw new ArgumentNullException(nameof(query)); }
 
 			return await this.GetAsync(new GraphQLRequest { Query = query }, cancellationToken).ConfigureAwait(false);
@@ -121,7 +123,7 @@ namespace GraphQL.Client {
 		/// <param name="graphQLRequest">The Request</param>
 		/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 		/// <returns>The Response</returns>
-		public async Task<GraphQLResponse> GetAsync(GraphQLRequest graphQLRequest, CancellationToken cancellationToken=default) {
+		public async Task<GraphQLResponse> GetAsync(GraphQLRequest graphQLRequest, CancellationToken cancellationToken = default) {
 			if (graphQLRequest == null) { throw new ArgumentNullException(nameof(graphQLRequest)); }
 			if (graphQLRequest.Query == null) { throw new ArgumentNullException(nameof(graphQLRequest.Query)); }
 
@@ -143,7 +145,7 @@ namespace GraphQL.Client {
 		/// <param name="query">The Request</param>
 		/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 		/// <returns>The Response</returns>
-		public async Task<GraphQLResponse> PostQueryAsync(string query, CancellationToken cancellationToken=default) {
+		public async Task<GraphQLResponse> PostQueryAsync(string query, CancellationToken cancellationToken = default) {
 			if (query == null) { throw new ArgumentNullException(nameof(query)); }
 
 			return await this.PostAsync(new GraphQLRequest { Query = query }, cancellationToken).ConfigureAwait(false);
@@ -155,7 +157,7 @@ namespace GraphQL.Client {
 		/// <param name="graphQLRequest">The Request</param>
 		/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 		/// <returns>The Response</returns>
-		public async Task<GraphQLResponse> PostAsync(GraphQLRequest graphQLRequest, CancellationToken cancellationToken=default) {
+		public async Task<GraphQLResponse> PostAsync(GraphQLRequest graphQLRequest, CancellationToken cancellationToken = default) {
 			if (graphQLRequest == null) { throw new ArgumentNullException(nameof(graphQLRequest)); }
 			if (graphQLRequest.Query == null) { throw new ArgumentNullException(nameof(graphQLRequest.Query)); }
 
@@ -222,8 +224,7 @@ namespace GraphQL.Client {
 				};
 				try {
 					return jsonSerializer.Deserialize<GraphQLResponse>(jsonTextReader);
-				}
-				catch (JsonReaderException exception) {
+				} catch (JsonReaderException exception) {
 					if (httpResponseMessage.IsSuccessStatusCode) {
 						throw exception;
 					}
