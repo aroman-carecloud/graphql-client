@@ -104,11 +104,8 @@ namespace GraphQL.Client {
 		/// <param name="query">The Request</param>
 		/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 		/// <returns>The Response</returns>
-		public async Task<GraphQLResponse> GetQueryAsync(string query, CancellationToken cancellationToken = default) {
-			if (query == null) { throw new ArgumentNullException(nameof(query)); }
-
-			return await this.GetAsync(new GraphQLRequest { Query = query }, cancellationToken).ConfigureAwait(false);
-		}
+		public async Task<GraphQLResponse> GetQueryAsync(string query, CancellationToken cancellationToken = default) =>
+			await this.GetAsync(new GraphQLRequest { Query = query }, cancellationToken).ConfigureAwait(false);
 
 		/// <summary>
 		/// Send a <see cref="GraphQLRequest"/> via GET
@@ -120,7 +117,7 @@ namespace GraphQL.Client {
 			if (graphQLRequest == null) { throw new ArgumentNullException(nameof(graphQLRequest)); }
 			if (graphQLRequest.Query == null) { throw new ArgumentNullException(nameof(graphQLRequest.Query)); }
 
-			var queryParamsBuilder = new StringBuilder($"query={graphQLRequest.Query}", 3);
+			var queryParamsBuilder = new StringBuilder($"query={graphQLRequest.Query}");
 			if (graphQLRequest.OperationName != null) { queryParamsBuilder.Append($"&operationName={graphQLRequest.OperationName}"); }
 			if (graphQLRequest.Variables != null) { queryParamsBuilder.Append($"&variables={JsonConvert.SerializeObject(graphQLRequest.Variables)}"); }
 
@@ -140,11 +137,8 @@ namespace GraphQL.Client {
 		/// <param name="query">The Request</param>
 		/// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
 		/// <returns>The Response</returns>
-		public async Task<GraphQLResponse> PostQueryAsync(string query, CancellationToken cancellationToken = default) {
-			if (query == null) { throw new ArgumentNullException(nameof(query)); }
-
-			return await this.PostAsync(new GraphQLRequest { Query = query }, cancellationToken).ConfigureAwait(false);
-		}
+		public async Task<GraphQLResponse> PostQueryAsync(string query, CancellationToken cancellationToken = default) =>
+			await this.PostAsync(new GraphQLRequest { Query = query }, cancellationToken).ConfigureAwait(false);
 
 		/// <summary>
 		/// Send a <see cref="GraphQLRequest"/> via POST
@@ -176,11 +170,8 @@ namespace GraphQL.Client {
 		/// <param name="cancellationToken"></param>
 		/// <returns></returns>
 		[Obsolete("EXPERIMENTAL")]
-		public async Task<GraphQLSubscriptionResult> SubscribeAsync(string query, CancellationToken cancellationToken = default) {
-			if (query == null) { throw new ArgumentNullException(nameof(query)); }
-
-			return await this.SubscribeAsync(new GraphQLRequest { Query = query }).ConfigureAwait(false);
-		}
+		public async Task<GraphQLSubscriptionResult> SubscribeAsync(string query, CancellationToken cancellationToken = default) =>
+			await this.SubscribeAsync(new GraphQLRequest { Query = query }).ConfigureAwait(false);
 
 		/// <summary>
 		/// Subscribes to a GraphQLQuery
@@ -204,8 +195,7 @@ namespace GraphQL.Client {
 		/// <summary>
 		/// Releases unmanaged resources
 		/// </summary>
-		public void Dispose() =>
-			this.httpClient.Dispose();
+		public void Dispose() => this.httpClient.Dispose();
 
 		/// <summary>
 		/// Reads the <see cref="HttpResponseMessage"/>
