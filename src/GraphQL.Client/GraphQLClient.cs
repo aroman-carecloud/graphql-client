@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using GraphQL.Client.Exceptions;
 using GraphQL.Client.Experimental;
+using GraphQL.Client.Internal.HttpHandlers;
 using GraphQL.Common.Request;
 using GraphQL.Common.Response;
 using Newtonsoft.Json;
@@ -77,7 +78,7 @@ namespace GraphQL.Client {
 			if (this.Options.HttpMessageHandler == null) { throw new ArgumentNullException(nameof(this.Options.HttpMessageHandler)); }
 			if (this.Options.MediaType == null) { throw new ArgumentNullException(nameof(this.Options.MediaType)); }
 
-			this.httpClient = new HttpClient(this.Options.HttpMessageHandler);
+			this.httpClient = new HttpClient(new GraphQLHttpHandler(this.Options.HttpMessageHandler));
 		}
 
 		/// <summary>
@@ -92,7 +93,7 @@ namespace GraphQL.Client {
 			if (this.Options.HttpMessageHandler == null) { throw new ArgumentNullException(nameof(this.Options.HttpMessageHandler)); }
 			if (this.Options.MediaType == null) { throw new ArgumentNullException(nameof(this.Options.MediaType)); }
 
-			this.httpClient = new HttpClient(this.Options.HttpMessageHandler);
+			this.httpClient = new HttpClient(new GraphQLHttpHandler(this.Options.HttpMessageHandler));
 		}
 
 		#endregion
