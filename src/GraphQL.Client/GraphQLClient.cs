@@ -38,15 +38,11 @@ namespace GraphQL.Client {
 		/// <summary>
 		/// The Options	to be used
 		/// </summary>
-		public GraphQLClientOptions Options {
-			get => graphQLHttpHandler.Options;
-			set => graphQLHttpHandler.Options = value;
-		}
+		public GraphQLClientOptions Options { get; set;}
 
 		#endregion
 
 		private readonly HttpClient httpClient;
-		private readonly GraphQLHttpHandler graphQLHttpHandler;
 
 		#region Constructors
 
@@ -75,15 +71,14 @@ namespace GraphQL.Client {
 		/// <param name="endPoint">The EndPoint to be used</param>
 		/// <param name="options">The Options to be used</param>
 		public GraphQLClient(Uri endPoint, GraphQLClientOptions options) {
-			if (options == null) { throw new ArgumentException(nameof(options)); }
+			this.Options = options ?? throw new ArgumentNullException(nameof(options));
 			options.EndPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
 
 			if (options.JsonSerializerSettings == null) { throw new ArgumentNullException(nameof(options.JsonSerializerSettings)); }
 			if (options.HttpMessageHandler == null) { throw new ArgumentNullException(nameof(options.HttpMessageHandler)); }
 			if (options.MediaType == null) { throw new ArgumentNullException(nameof(options.MediaType)); }
 
-			this.graphQLHttpHandler = new GraphQLHttpHandler(options);
-			this.httpClient = new HttpClient(this.graphQLHttpHandler);
+			this.httpClient = new HttpClient(this.Options.HttpMessageHandler);
 		}
 
 		/// <summary>
@@ -91,14 +86,13 @@ namespace GraphQL.Client {
 		/// </summary>
 		/// <param name="options">The Options to be used</param>
 		public GraphQLClient(GraphQLClientOptions options) {
-			if (options == null) { throw new ArgumentException(nameof(options)); }
+			this.Options = options ?? throw new ArgumentNullException(nameof(options));
 			if (options.EndPoint == null) { throw new ArgumentNullException(nameof(options.EndPoint)); }
 			if (options.JsonSerializerSettings == null) { throw new ArgumentNullException(nameof(options.JsonSerializerSettings)); }
 			if (options.HttpMessageHandler == null) { throw new ArgumentNullException(nameof(options.HttpMessageHandler)); }
 			if (options.MediaType == null) { throw new ArgumentNullException(nameof(options.MediaType)); }
 
-			this.graphQLHttpHandler = new GraphQLHttpHandler(options);
-			this.httpClient = new HttpClient(this.graphQLHttpHandler);
+			this.httpClient = new HttpClient(this.Options.HttpMessageHandler);
 		}
 
 		#endregion
