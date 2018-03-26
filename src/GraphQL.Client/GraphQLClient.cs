@@ -117,11 +117,13 @@ namespace GraphQL.Client {
 			if (graphQLRequest == null) { throw new ArgumentNullException(nameof(graphQLRequest)); }
 			if (graphQLRequest.Query == null) { throw new ArgumentNullException(nameof(graphQLRequest.Query)); }
 
+			var resultingUri = new UriBuilder(this.Options.EndPoint);
 			var queryParamsBuilder = new StringBuilder($"query={graphQLRequest.Query}");
 			if (graphQLRequest.OperationName != null) { queryParamsBuilder.Append($"&operationName={graphQLRequest.OperationName}"); }
 			if (graphQLRequest.Variables != null) { queryParamsBuilder.Append($"&variables={JsonConvert.SerializeObject(graphQLRequest.Variables)}"); }
+			resultingUri.Query = queryParamsBuilder.ToString();
 
-			using (var request = new HttpRequestMessage(HttpMethod.Get, $"{this.Options.EndPoint}?{queryParamsBuilder}"))
+			using (var request = new HttpRequestMessage(HttpMethod.Get, resultingUri.Uri))
 			using (var response = await this.httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false)) {
 				return await this.ReadHttpResponseMessageAsync(response).ConfigureAwait(false);
 			}
