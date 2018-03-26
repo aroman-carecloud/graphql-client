@@ -38,11 +38,15 @@ namespace GraphQL.Client {
 		/// <summary>
 		/// The Options	to be used
 		/// </summary>
-		public GraphQLClientOptions Options { get; set; }
+		public GraphQLClientOptions Options {
+			get => graphQLHttpHandler.Options;
+			set => graphQLHttpHandler.Options = value;
+		}
 
 		#endregion
 
-		private readonly HttpClient httpClient;
+		private HttpClient httpClient=>graphQLHttpHandler.HttpClient;
+		private readonly GraphQLHttpHandler graphQLHttpHandler;
 
 		#region Constructors
 
@@ -71,14 +75,14 @@ namespace GraphQL.Client {
 		/// <param name="endPoint">The EndPoint to be used</param>
 		/// <param name="options">The Options to be used</param>
 		public GraphQLClient(Uri endPoint, GraphQLClientOptions options) {
-			this.Options = options ?? throw new ArgumentNullException(nameof(options));
-			this.Options.EndPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
+			if (options == null) { throw new ArgumentException(nameof(options)); }
+			options.EndPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
 
-			if (this.Options.JsonSerializerSettings == null) { throw new ArgumentNullException(nameof(this.Options.JsonSerializerSettings)); }
-			if (this.Options.HttpMessageHandler == null) { throw new ArgumentNullException(nameof(this.Options.HttpMessageHandler)); }
-			if (this.Options.MediaType == null) { throw new ArgumentNullException(nameof(this.Options.MediaType)); }
+			if (options.JsonSerializerSettings == null) { throw new ArgumentNullException(nameof(options.JsonSerializerSettings)); }
+			if (options.HttpMessageHandler == null) { throw new ArgumentNullException(nameof(options.HttpMessageHandler)); }
+			if (options.MediaType == null) { throw new ArgumentNullException(nameof(options.MediaType)); }
 
-			this.httpClient = new HttpClient(new GraphQLHttpHandler(this.Options.HttpMessageHandler));
+			this.graphQLHttpHandler = new GraphQLHttpHandler(options);
 		}
 
 		/// <summary>
@@ -86,14 +90,13 @@ namespace GraphQL.Client {
 		/// </summary>
 		/// <param name="options">The Options to be used</param>
 		public GraphQLClient(GraphQLClientOptions options) {
-			this.Options = options ?? throw new ArgumentNullException(nameof(options));
+			if(options==null) { throw new ArgumentException(nameof(options)); }
+			if (options.EndPoint == null) { throw new ArgumentNullException(nameof(options.EndPoint)); }
+			if (options.JsonSerializerSettings == null) { throw new ArgumentNullException(nameof(options.JsonSerializerSettings)); }
+			if (options.HttpMessageHandler == null) { throw new ArgumentNullException(nameof(options.HttpMessageHandler)); }
+			if (options.MediaType == null) { throw new ArgumentNullException(nameof(options.MediaType)); }
 
-			if (this.Options.EndPoint == null) { throw new ArgumentNullException(nameof(this.Options.EndPoint)); }
-			if (this.Options.JsonSerializerSettings == null) { throw new ArgumentNullException(nameof(this.Options.JsonSerializerSettings)); }
-			if (this.Options.HttpMessageHandler == null) { throw new ArgumentNullException(nameof(this.Options.HttpMessageHandler)); }
-			if (this.Options.MediaType == null) { throw new ArgumentNullException(nameof(this.Options.MediaType)); }
-
-			this.httpClient = new HttpClient(new GraphQLHttpHandler(this.Options.HttpMessageHandler));
+			this.graphQLHttpHandler = new GraphQLHttpHandler(options);
 		}
 
 		#endregion

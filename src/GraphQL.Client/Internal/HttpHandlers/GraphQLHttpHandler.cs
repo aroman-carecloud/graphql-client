@@ -5,7 +5,14 @@ namespace GraphQL.Client.Internal.HttpHandlers {
 
 	internal class GraphQLHttpHandler : MessageProcessingHandler {
 
-		public GraphQLHttpHandler(HttpMessageHandler innerHandler) : base(innerHandler) {}
+		public HttpClient HttpClient { get; }
+
+		public GraphQLClientOptions Options { get; set; }
+
+		public GraphQLHttpHandler(GraphQLClientOptions options) : base(options.HttpMessageHandler) {
+			this.HttpClient = new HttpClient(this.InnerHandler);
+			this.Options = options;
+		}
 
 		protected override HttpRequestMessage ProcessRequest(HttpRequestMessage request, CancellationToken cancellationToken) {
 			return request;
